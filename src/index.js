@@ -1,6 +1,8 @@
 import './index.scss';
 import youTubePlayer from 'youtube-player';
 
+const ws = new WebSocket('ws://koray-retina.local:3333/');
+
 class App {
   start() {
     this.i = 0;
@@ -68,6 +70,12 @@ class App {
       'eb4UcIZMhw8'
     ];
   }
+
+  recieveNewVideos(videos) {
+    this.videos = videos.map(item => item.id);
+    this.reset();
+    this.playNext();
+  }
 }
 
 /**
@@ -76,3 +84,7 @@ class App {
  */
 const app = new App();
 app.start();
+
+ws.onmessage = event => {
+  app.recieveNewVideos(JSON.parse(event.data));
+};
