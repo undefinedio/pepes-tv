@@ -1,53 +1,78 @@
 import './index.scss';
-
 import youTubePlayer from 'youtube-player';
 
-const player = youTubePlayer('video-player', {
-  playerVars: {
-    controls: 0,
-    progressBar: false,
-    wmode: 'transparent',
-    showinfo: 0,
-    modestbranding: 1,
-    height: '650',
-    width: '640'
+class App {
+  start() {
+    this.i = 0;
+
+    this.initPlayer();
+    this.getVideos();
+    this.playVideo(this.videos[this.i]);
+
+    /**
+     * when video is done play next
+     */
+    this.player.on('stateChange', event => {
+      if (event.data === 0) {
+        this.playNext();
+      }
+    });
   }
-});
 
-const videos = [
-  'N813Bj8CnW0',
-  'l0wPHAau1ts',
-  'eb4UcIZMhw8'
-];
+  /**
+   * Initialize player
+   */
+  initPlayer() {
+    this.player = youTubePlayer('video-player', {
+      playerVars: {
+        controls: 0,
+        progressBar: false,
+        wmode: 'transparent',
+        showinfo: 0,
+        modestbranding: 1
+      }
+    });
+  }
 
-let i = 0;
+  playVideo(video) {
+    this.player.loadVideoById(video);
+  }
 
-function playVideo(video) {
-  player.loadVideoById(video);
-}
+  /**
+   * Play next video
+   */
+  playNext() {
+    this.i++;
 
-function start() {
-  playVideo(videos[i]);
-
-  player.on('stateChange', event => {
-    if (event.data === 0) {
-      playNext();
+    if (this.i >= this.videos.length) {
+      this.reset();
     }
-  });
-}
 
-function playNext() {
-  i++;
-
-  if (i >= videos.length) {
-    reset();
+    this.playVideo(this.videos[this.i]);
   }
 
-  playVideo(videos[i]);
+  /**
+   * Reset counter
+   */
+  reset() {
+    this.i = 0;
+  }
+
+  /**
+   * Get list of videos
+   */
+  getVideos() {
+    this.videos = [
+      'N813Bj8CnW0',
+      'l0wPHAau1ts',
+      'eb4UcIZMhw8'
+    ];
+  }
 }
 
-function reset() {
-  i = 0;
-}
-
-start();
+/**
+ * Start the app
+ * @type {Player}
+ */
+const app = new App();
+app.start();
